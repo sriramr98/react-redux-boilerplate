@@ -9,16 +9,17 @@ import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import makeStyles from '@material-ui/styles/makeStyles';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
-import {registerUser, loginUser} from 'utils/firebase';
-import {setUser, clearUser} from 'containers/App/actions';
+import {setUser} from 'containers/App/actions';
+import ErrorMessage from 'components/Common/ErrorMessage';
 import useForm from 'hooks/useForm';
 import {signInValidator, signUpValidator} from 'utils/validators';
-
+import {registerUser, loginUser} from 'utils/firebase';
 import './css/authDialog.css';
 
 const useStyles = makeStyles({
@@ -53,6 +54,8 @@ const AuthDialog = ({open, handleClose}) => {
 
   const [showRight, setShowRight] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [authOnProcess, setAuthOnProcess] = useState(false);
+  const [authError, setAuthError] = useState(null);
   const {
     values: signInValues,
     errors: signInErrors,
@@ -66,7 +69,6 @@ const AuthDialog = ({open, handleClose}) => {
     validationSchema: signInValidator,
     onSubmit: onSignInSubmitted,
   });
-
   const {
     values: signUpValues,
     errors: signUpErrors,
@@ -82,14 +84,36 @@ const AuthDialog = ({open, handleClose}) => {
     onSubmit: onSignUpSubmitted,
   });
 
-  console.log({signInErrors, signUpErrors});
+  const currentUser = useSelector(state => state.app.currentUser);
 
-  function onSignInSubmitted({email, password}) {
-    console.log('Sign In Submitted');
+  async function onSignInSubmitted({email, password}) {
+    setAuthOnProcess(true);
+    try {
+      const user = await loginUser(email, password);
+      setAuthOnProcess(false);
+      dispatch(setUser(user));
+    } catch (err) {
+      setAuthOnProcess(false);
+      setAuthError({
+        signIn: true,
+        message: err.message,
+      });
+    }
   }
 
-  function onSignUpSubmitted({email, password}) {
-    console.log('Sign Up Submitted');
+  async function onSignUpSubmitted({email, password}) {
+    setAuthOnProcess(true);
+    try {
+      const user = await registerUser(email, password);
+      setAuthOnProcess(false);
+      dispatch(setUser(user));
+    } catch (err) {
+      setAuthOnProcess(false);
+      setAuthError({
+        register: true,
+        message: err.message,
+      });
+    }
   }
 
   const passwordFieldEndAdornment = (
@@ -112,9 +136,10 @@ const AuthDialog = ({open, handleClose}) => {
   }
 
   return (
-    <Dialog maxWidth="md" open={open} onClose={handleClose}>
+    <Dialog maxWidth="md" open={open && !currentUser} onClose={handleClose}>
       <DialogContent classes={{root: styles.dialogContentRoot}}>
         <Box>
+          {authOnProcess && <LinearProgress color="secondary" />}
           <div
             className={`container ${showRight ? 'right-panel-active' : ''}`}
             id="container"
@@ -140,11 +165,15 @@ const AuthDialog = ({open, handleClose}) => {
                   </IconButton>
                 </Box>
                 <Typography>or use your email for registration</Typography>
+                {authError && authError.register && (
+                  <ErrorMessage message={authError.message} />
+                )}
                 <TextField
                   fullWidth
                   label="Name"
                   value={signUpValues.name}
                   name="name"
+                  disabled={authOnProcess}
                   onChange={handleSignUpInputChange}
                   error={signUpErrors.name}
                   helperText={signUpErrors && signUpErrors.name && signUpErrors.message}
@@ -156,6 +185,7 @@ const AuthDialog = ({open, handleClose}) => {
                   label="Email"
                   type="email"
                   name="email"
+                  disabled={authOnProcess}
                   value={signUpValues.email}
                   error={signUpErrors.email}
                   helperText={signUpErrors && signUpErrors.email && signUpErrors.message}
@@ -169,6 +199,7 @@ const AuthDialog = ({open, handleClose}) => {
                   margin="normal"
                   id="password"
                   variant="outlined"
+                  disabled={authOnProcess}
                   type={showPassword ? 'text' : 'password'}
                   label="Password"
                   value={signUpValues.password}
@@ -182,6 +213,7 @@ const AuthDialog = ({open, handleClose}) => {
                   }}
                 />
                 <Button
+                  disabled={authOnProcess}
                   onClick={handleSignUpSubmit}
                   type="submit"
                   className={styles.signUpButton}
@@ -213,10 +245,14 @@ const AuthDialog = ({open, handleClose}) => {
                   </IconButton>
                 </Box>
                 <Typography>or use your account</Typography>
+                {authError && authError.signIn && (
+                  <ErrorMessage message={authError.message} />
+                )}
                 <TextField
                   fullWidth
                   label="Email"
                   type="email"
+                  disabled={authOnProcess}
                   name="email"
                   value={signInValues.email}
                   error={signInErrors.email}
@@ -229,6 +265,7 @@ const AuthDialog = ({open, handleClose}) => {
                   fullWidth
                   id="password"
                   margin="normal"
+                  disabled={authOnProcess}
                   name="password"
                   variant="outlined"
                   type={showPassword ? 'text' : 'password'}
@@ -251,7 +288,12 @@ const AuthDialog = ({open, handleClose}) => {
                   Forgot your password?
                 </Typography>
                 <br />
-                <Button onClick={handleSignInSubmit} variant="contained" color="primary">
+                <Button
+                  disabled={authOnProcess}
+                  onClick={handleSignInSubmit}
+                  variant="contained"
+                  color="primary"
+                >
                   Sign in
                 </Button>
               </form>
@@ -261,7 +303,12 @@ const AuthDialog = ({open, handleClose}) => {
                 <div className="overlay-panel overlay-left">
                   <h1>Welcome Back!</h1>
                   <p>To keep connected with us please login with your personal info</p>
-                  <Button variant="contained" className="ghost" onClick={togglePanel}>
+                  <Button
+                    disabled={authOnProcess}
+                    variant="contained"
+                    className="ghost"
+                    onClick={togglePanel}
+                  >
                     Sign In
                   </Button>
                 </div>
@@ -269,6 +316,7 @@ const AuthDialog = ({open, handleClose}) => {
                   <h1>Hello, Friend!</h1>
                   <p>Enter your personal details and start journey with us</p>
                   <Button
+                    disabled={authOnProcess}
                     variant="contained"
                     className="ghost"
                     id="signUp"

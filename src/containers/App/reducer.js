@@ -2,6 +2,7 @@ import {INCREMENT, DECREMENT, SET_USER, CLEAR_USER} from './actionTypes';
 
 const initialState = {
   value: 0,
+  currentUser: null,
 };
 
 export default (state = initialState, action) => {

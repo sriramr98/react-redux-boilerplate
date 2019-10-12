@@ -17,7 +17,7 @@ function useForm({initialState = {}, validationSchema, onSubmit}) {
       const isValid = await validateInput();
       if (isValid) {
         setErrors({});
-        onSubmit(values);
+        await onSubmit(values);
       }
     } catch (err) {
       setErrors({
