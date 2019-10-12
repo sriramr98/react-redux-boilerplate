@@ -12,6 +12,12 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import makeStyles from '@material-ui/styles/makeStyles';
+import {useDispatch} from 'react-redux';
+
+import {registerUser, loginUser} from 'utils/firebase';
+import {setUser, clearUser} from 'containers/App/actions';
+import useForm from 'hooks/useForm';
+import {signInValidator, signUpValidator} from 'utils/validators';
 
 import './css/authDialog.css';
 
@@ -43,18 +49,49 @@ const useStyles = makeStyles({
 
 const AuthDialog = ({open, handleClose}) => {
   const styles = useStyles();
+  const dispatch = useDispatch();
 
   const [showRight, setShowRight] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [signUpValues, setSignUpValues] = useState({
-    email: '',
-    name: '',
-    password: '',
+  const {
+    values: signInValues,
+    errors: signInErrors,
+    handleInputChange: handleSignInInputChange,
+    handleSubmit: handleSignInSubmit,
+  } = useForm({
+    initialState: {
+      email: '',
+      password: '',
+    },
+    validationSchema: signInValidator,
+    onSubmit: onSignInSubmitted,
   });
-  const [signInValues, setSignInValues] = useState({
-    email: '',
-    password: '',
+
+  const {
+    values: signUpValues,
+    errors: signUpErrors,
+    handleInputChange: handleSignUpInputChange,
+    handleSubmit: handleSignUpSubmit,
+  } = useForm({
+    initialState: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+    validationSchema: signUpValidator,
+    onSubmit: onSignUpSubmitted,
   });
+
+  console.log({signInErrors, signUpErrors});
+
+  function onSignInSubmitted({email, password}) {
+    console.log('Sign In Submitted');
+  }
+
+  function onSignUpSubmitted({email, password}) {
+    console.log('Sign Up Submitted');
+  }
+
   const passwordFieldEndAdornment = (
     <InputAdornment position="end">
       <IconButton
@@ -67,18 +104,6 @@ const AuthDialog = ({open, handleClose}) => {
     </InputAdornment>
   );
 
-  function handleSignUpInputChange(e) {
-    setSignUpValues({
-      ...signUpValues,
-      [e.target.name]: e.target.value,
-    });
-  }
-  function handleSignInInputChange(e) {
-    setSignInValues({
-      ...signInValues,
-      [e.target.name]: e.target.value,
-    });
-  }
   function togglePanel() {
     setShowRight(!showRight);
   }
@@ -121,6 +146,8 @@ const AuthDialog = ({open, handleClose}) => {
                   value={signUpValues.name}
                   name="name"
                   onChange={handleSignUpInputChange}
+                  error={signUpErrors.name}
+                  helperText={signUpErrors && signUpErrors.name && signUpErrors.message}
                   margin="normal"
                   variant="outlined"
                 />
@@ -128,7 +155,10 @@ const AuthDialog = ({open, handleClose}) => {
                   fullWidth
                   label="Email"
                   type="email"
+                  name="email"
                   value={signUpValues.email}
+                  error={signUpErrors.email}
+                  helperText={signUpErrors && signUpErrors.email && signUpErrors.message}
                   onChange={handleSignUpInputChange}
                   margin="normal"
                   variant="outlined"
@@ -142,12 +172,17 @@ const AuthDialog = ({open, handleClose}) => {
                   type={showPassword ? 'text' : 'password'}
                   label="Password"
                   value={signUpValues.password}
+                  error={signUpErrors.password}
+                  helperText={
+                    signUpErrors && signUpErrors.password && signUpErrors.message
+                  }
                   onChange={handleSignUpInputChange}
                   InputProps={{
                     endAdornment: passwordFieldEndAdornment,
                   }}
                 />
                 <Button
+                  onClick={handleSignUpSubmit}
                   type="submit"
                   className={styles.signUpButton}
                   variant="contained"
@@ -184,6 +219,8 @@ const AuthDialog = ({open, handleClose}) => {
                   type="email"
                   name="email"
                   value={signInValues.email}
+                  error={signInErrors.email}
+                  helperText={signInErrors && signInErrors.email && signInErrors.message}
                   onChange={handleSignInInputChange}
                   margin="normal"
                   variant="outlined"
@@ -195,6 +232,10 @@ const AuthDialog = ({open, handleClose}) => {
                   name="password"
                   variant="outlined"
                   type={showPassword ? 'text' : 'password'}
+                  error={signInErrors.password}
+                  helperText={
+                    signInErrors && signInErrors.password && signInErrors.message
+                  }
                   label="Password"
                   value={signInValues.password}
                   onChange={handleSignInInputChange}
@@ -210,7 +251,7 @@ const AuthDialog = ({open, handleClose}) => {
                   Forgot your password?
                 </Typography>
                 <br />
-                <Button variant="contained" color="primary">
+                <Button onClick={handleSignInSubmit} variant="contained" color="primary">
                   Sign in
                 </Button>
               </form>
