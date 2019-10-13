@@ -10,17 +10,17 @@ import Button from '@material-ui/core/Button';
 import firebase from 'firebase/app';
 
 import AuthDialog from 'components/Common/AuthDialog';
-import {incrementValue, decrementValue, setUser} from 'containers/App/actions';
-import {logout} from 'utils/firebase';
+import {incrementValue, decrementValue, userActions} from 'containers/App/actions';
+import {AUTH_TYPES} from 'utils/constants';
 
 function Home() {
   const dispatch = useDispatch();
   const [isAuthDialogOpen, setAuthDialogOpen] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = firebase
-      .auth()
-      .onAuthStateChanged(user => dispatch(setUser(user)));
+    const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+      if (user) dispatch(userActions.success(user));
+    });
     return () => unsubscribe();
   }, [dispatch]);
 
@@ -31,6 +31,12 @@ function Home() {
   const value = useSelector(state => state.app.value);
   const currentUser = useSelector(state => state.app.currentUser);
 
+  const isUserLoggedIn =
+    !currentUser.isFetching &&
+    currentUser.finished &&
+    !currentUser.error &&
+    currentUser.data;
+
   function onSubtract() {
     dispatch(decrementValue());
   }
@@ -40,7 +46,11 @@ function Home() {
   }
 
   async function signOut() {
-    await logout();
+    dispatch(
+      userActions.request({
+        authType: AUTH_TYPES.LOGOUT,
+      })
+    );
   }
 
   return (
@@ -70,8 +80,8 @@ function Home() {
           <AddIcon />
         </IconButton>
       </Box>
-      {!currentUser && <Button onClick={() => toggleAuthDialogState()}>Login</Button>}
-      {currentUser && <Button onClick={signOut}>Sign Out</Button>}
+      {!isUserLoggedIn && <Button onClick={() => toggleAuthDialogState()}>Login</Button>}
+      {isUserLoggedIn && <Button onClick={signOut}>Sign Out</Button>}
       <AuthDialog open={isAuthDialogOpen} handleClose={toggleAuthDialogState} />
     </Box>
   );

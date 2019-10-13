@@ -1,12 +1,20 @@
-import {INCREMENT, DECREMENT, SET_USER, CLEAR_USER} from './actionTypes';
+import {INCREMENT, DECREMENT, USER_AUTH} from './actionTypes';
+import {
+  commonInitialState,
+  requestType,
+  successType,
+  failureType,
+  clearType,
+} from 'utils/redux';
 
 const initialState = {
   value: 0,
-  currentUser: null,
+  currentUser: commonInitialState,
 };
 
 export default (state = initialState, action) => {
-  switch (action.type) {
+  const {type: actionType, payload: actionPayload} = action;
+  switch (actionType) {
     case INCREMENT:
       return {
         ...state,
@@ -17,16 +25,49 @@ export default (state = initialState, action) => {
         ...state,
         value: state.value - 1,
       };
-    case SET_USER:
+    case requestType(USER_AUTH):
       return {
         ...state,
-        currentUser: action.payload,
+        currentUser: {
+          ...state.currentUser,
+          isFetching: true,
+          finished: false,
+          data: null,
+          error: null,
+        },
       };
-    case CLEAR_USER:
+    case successType(USER_AUTH): {
       return {
         ...state,
-        currentUser: null,
+        currentUser: {
+          ...state.currentUser,
+          isFetching: false,
+          finished: true,
+          data: actionPayload,
+          error: null,
+        },
       };
+    }
+    case failureType(USER_AUTH): {
+      return {
+        ...state,
+        currentUser: {
+          ...state.currentUser,
+          isFetching: false,
+          finished: true,
+          data: null,
+          error: actionPayload,
+        },
+      };
+    }
+    case clearType(USER_AUTH): {
+      return {
+        ...state,
+        currentUser: {
+          ...commonInitialState,
+        },
+      };
+    }
     default:
       return state;
   }
