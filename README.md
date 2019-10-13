@@ -9,7 +9,7 @@ This boilerplate contains
 - Firebase
 - Material UI
 
-## Pending Functionalities
+#### Pending Functionalities
 
 - Integration Tests and UI Tests
 - Integrating with a CI/CD service
