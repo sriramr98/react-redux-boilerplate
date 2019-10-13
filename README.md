@@ -1,68 +1,99 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# React Redux Boilerplate
 
-## Available Scripts
+This is a simple React Redux Boilerplate I created for my future projects.
+This boilerplate contains
 
-In the project directory, you can run:
+- React (duh!)
+- Redux
+- Redux-Saga
+- Firebase
+- Material UI
 
-### `yarn start`
+#### Pending Functionalities
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Integration Tests and UI Tests
+- Integrating with a CI/CD service
+- Deployment to Heroku/Digital Ocean/Firebase/Netlify (pick one)
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## Getting Started
 
-### `yarn test`
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
 
-### `yarn build`
+Make sure you have the following pre requisites before getting started
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- NodeJS (LTS)
+- Firebase Account
+- Knowledge on Redux and Redux Sagas
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### Installing
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+#### Firebase Setup
 
-### `yarn eject`
+- Log on to [firebase](https://console.firebase.google.com)
+- Create a new project
+- Create a new app in the project
+- Add the following env variables to .env file
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+REACT_APP_FIREBASE_API_KEY={apiKey}
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+REACT_APP_FIREBASE_AUTH_DOMAIN={authDomain}
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+REACT_APP_FIREBASE_DATABASE_URL={databaseUrl}
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+REACT_APP_FIREBASE_PROJECT_ID={projectId}
 
-## Learn More
+REACT_APP_FIREBASE_STORAGE_BUCKET={storageBucketURL}
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID={messagingSenderId}
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+#### Remove Git Setup (Optional)
 
-### Code Splitting
+If you want to remove my previous git commits and start with this repo with new commits
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+```
+git remote rm origin
+```
 
-### Analyzing the Bundle Size
+Then add your origin remote and start working
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+#### Start Dev Server
 
-### Making a Progressive Web App
+Start coding by running
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+```
+yarn start
+```
 
-### Advanced Configuration
+## Built With
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+- [ReactJS](https://reactjs.org/) - The frontend web framework used
+- [Firebase](https://console.firebase.google.com) - Authentication
+- [Redux](https://redux.js.org/) - React State Management
+- [Redux Saga](https://github.com/redux-saga/redux-saga) - Redux Side Effects
+- [Material UI](https://material-ui.com/) - UI Framework for Material Design
 
-### Deployment
+## Contributing
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) ( In progress ) for details on our code of conduct, and the process for submitting pull requests to us.
 
-### `yarn build` fails to minify
+## Versioning
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/sriramr98/react-redux-boilerplate/tags).
+
+## Authors
+
+- **Sriram R** - _Initial work_ - [Github](https://github.com/sriramr98)
+
+See also the list of [contributors](https://github.com/sriramr98/react-redux-boilerplate/graphs/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+- Login Modal UI Inspired from [Florin Pop Double Slider Tutorial](https://www.florin-pop.com/blog/2019/03/double-slider-sign-in-up-form/)
