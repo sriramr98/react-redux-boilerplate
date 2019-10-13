@@ -2,6 +2,16 @@
   "name": "react-boilerplate",
   "version": "0.1.0",
   "private": true,
+  "description": "A simple react redux boilerplate",
+  "repository": {
+    "type": "git",
+    "url": "git://guthub.com/sriramr98/react-redux-boilerplate"
+  },
+  "author": {
+    "name": "Sriram R",
+    "email": "sriramr083@gmail.com",
+    "url": "https://github.com/sriramr98/"
+  },
   "dependencies": {
     "@material-ui/core": "^4.5.0",
     "@material-ui/icons": "^4.4.3",
